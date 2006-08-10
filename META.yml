@@ -1,15 +1,12 @@
----
-name: Catalyst-Plugin-Session-DynamicExpiry
-version: 0.01
-author:
-  - 'Marcus Ramberg, C<mramberg@cpan.org>'
-abstract: set expiry of cookies per session
-license: perl
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Catalyst-Plugin-Session-DynamicExpiry
+version:      0.02
+version_from: lib/Catalyst/Plugin/Session/DynamicExpiry.pm
+installdirs:  site
 requires:
-  Catalyst::Plugin::Session: 0.01
-  Test::MockObject: 1.01
-provides:
-  Catalyst::Plugin::Session::DynamicExpiry:
-    file: lib/Catalyst/Plugin/Session/DynamicExpiry.pm
-    version: 0.01
-generated_by: Module::Build version 0.2607
+    Catalyst::Plugin::Session:     0.11
+    Test::use::ok:                 0
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.30

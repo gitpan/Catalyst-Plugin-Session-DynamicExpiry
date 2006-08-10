@@ -5,10 +5,11 @@ WriteMakefile
           'NAME' => 'Catalyst::Plugin::Session::DynamicExpiry',
           'VERSION_FROM' => 'lib/Catalyst/Plugin/Session/DynamicExpiry.pm',
           'PREREQ_PM' => {
-                           'Catalyst::Plugin::Session' => '0.01',
-                           'Test::MockObject' => '1.01'
+                           'Catalyst::Plugin::Session' => '0.11',
+                           'Test::use::ok' => '0'
                          },
           'INSTALLDIRS' => 'site',
+          'EXE_FILES' => [],
           'PL_FILES' => {}
         )
 ;
