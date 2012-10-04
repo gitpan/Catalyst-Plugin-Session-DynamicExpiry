@@ -1,18 +1,19 @@
 package Catalyst::Plugin::Session::DynamicExpiry;
-use base qw/Class::Accessor::Fast/;
+use Moose;
+use MRO::Compat;
+use Try::Tiny;
+use namespace::autoclean;
 
-use NEXT;
+our $VERSION='0.04';
 
-our $VERSION='0.02';
-
-__PACKAGE__->mk_accessors(qw/_session_time_to_live/);
+has [qw/_session_time_to_live/] => ( is => 'rw' );
 
 sub session_time_to_live {
     my ( $c, @args ) = @_;
 
     if ( @args ) {
         $c->_session_time_to_live($args[0]);
-        eval { $c->_session->{__time_to_live} = $args[0] };
+        try { $c->_session->{__time_to_live} = $args[0] };
     }
 
     return $c->_session_time_to_live || eval { $c->_session->{__time_to_live} };
@@ -20,13 +21,13 @@ sub session_time_to_live {
 
 sub calculate_initial_session_expires {
     my $c = shift;
-    
+
     if ( defined( my $ttl = $c->_session_time_to_live ) ) {
         $c->log->debug("Overridden time to live: $ttl") if $c->debug;
         return time() + $ttl;
     }
 
-    return $c->NEXT::calculate_initial_session_expires( @_ );
+    return $c->next::method( @_ );
 }
 
 sub calculate_extended_session_expires {
@@ -38,7 +39,7 @@ sub calculate_extended_session_expires {
         return time() + $ttl;
     }
 
-    return $c->NEXT::calculate_extended_session_expires( @_ );
+    return $c->next::method( @_ );
 }
 
 sub _save_session {
@@ -50,7 +51,7 @@ sub _save_session {
         }
     }
 
-    $c->NEXT::_save_session( @_ );
+    $c->next::method( @_ );
 }
 
 1;
@@ -62,6 +63,14 @@ Catalyst::Plugin::Session::DynamicExpiry - per-session custom expiry times
 =head1 SYNOPSIS
 
     # put Session::DynamicExpiry in your use Catalyst line
+    # note that for this plugin to work it must appear before the Session
+    # plugin, since it overrides some of that plugin's methods.
+    
+    use Catalyst qw/ ...
+
+        Session::DynamicExpiry
+        Session
+    /;
     
     if ($c->req->param('remember') { 
       $c->session_time_to_live( 604800 ) # expire in one week.
@@ -97,6 +106,12 @@ To set the TTL for this session use this method.
 =head2 calculate_extended_session_expires
 
 Overridden to implement dynamic expiry functionality.
+
+=head1 CAVEATS
+
+When it just doesn't work, it's usually because you put it after
+L<Catalyst::Plugin::Session> in the plugin list. It must go before it so that
+it can override L<Catalyst::Plugin::Session>'s methods.
 
 =head1 SEE ALSO
 
